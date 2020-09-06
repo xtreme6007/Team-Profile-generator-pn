@@ -10,7 +10,7 @@ const outputPath = path.join(OUTPUT_DIR, "team.html");
 
 const render = require("./lib/htmlRenderer");
 
-let response = {};
+let memebers = [];
 
 function startTeam() {
     inquirer.prompt([
@@ -22,100 +22,49 @@ function startTeam() {
             choices:["Manager", "Intern", "Engineer"]
         }
     ])
-}
+    .then(response => {
+        switch (response.role){
 
-
-
-async function addMember() {
-    const answers = await inquirer.prompt([
-        {
-            message: "Please enter your team name",
-            name: "team"
-
-
-        },
-
-        {
-            // get Team members name
-            message: "Enter Team Member's name",
-            name: "name"
-        },
-        {
-            // get team members role
-            type: "list",
-            message: "Select temam members role",
-            name: "role",
-            choices: ["Engineer", "Intern", "Manager"]
-
-        },
-        {
-            // get team members id
-            name: "id",
-            message: "Please enter Team members id."
-        },
-        // get team members email
-        {
-            name: "email",
-            message: "Please enter user email."
         }
+    }
 
-    ])
-        .then(answers => {
-            if (answers.role === "Engineer") {
-                inquirer.prompt([
-                    {
-                        name: "Github",
-                        message: "Please enter The Github Username"
-                    }
-                ])
-                    .then(addMore)
+    )
+}
+    function addManager() {
+        inquirer.prompt([
+            {
+                type: "input",
+                message: "Please enter team member name",
+                name: "manName"
+            },
+            {
+                type: "input",
+                name: "manId",
+                message: "Please enter employees ID number"
+            },
+            {
+            type: "input",
+            name: "manEmail",
+            message: "Please employees email"
+            },
+            {
+                type: "input",
+                name: "manOffice",
+                message: "Please enter employees office numbers"
 
-
-
-            } else if (answers.role === "Intern") {
-                inquirer.prompt([
-                    {
-                        name: "school",
-                        message: "Please enter the school name"
-                    }
-                ])
-
-            } else if (answers.role === "Manager") {
-                inquirer.prompt([
-                    {
-                        name: "officeNumber",
-                        message: "Please enter the office number for this employee"
-
-                    }
-                ])
             }
-
+        ])
+        .then(response => {
+            let manager = new Manager(response.manName, response.manId, response.manEmail, response.manOffice);
+            memebers.push(manager);
+            console.log(manager)
 
         })
+    }
 
-    response.push(answers);
-}
 
-function addMore(answers) {
-    let add = inquirer.prompt([
-        {
-            type: "list",
-            name: "addMore",
-            message: "Would you like to add another team member?",
-            choices: ["yes", "no"]
-        }
-    ])
-        .then(answers => {
-            if (answers.addMore === "yes") {
-                return addMember();
-            } else {
-                fs.writeFile(outputPath, "html");
-            }
 
-        }
 
-        )
-}
 const replacePlaceholders = (template, placeholder, value) => {
 
     //Creating a RegEx Pattern that searches for the placeholder that is given within the {{ }}
@@ -127,7 +76,7 @@ const replacePlaceholders = (template, placeholder, value) => {
 
 
 
-addMember();
+
 
 
 
