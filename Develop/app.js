@@ -10,74 +10,94 @@ const outputPath = path.join(OUTPUT_DIR, "team.html");
 
 const render = require("./lib/htmlRenderer");
 
-let answers ={};
+let response = {};
+
+function startTeam() {
+    inquirer.prompt([
+
+        {
+            name: "Role",
+            type: "list",
+            message: "please choose Team Member role",
+            choices:["Manager", "Intern", "Engineer"]
+        }
+    ])
+}
 
 
 
- async function addMember() {
-     answers = await inquirer.prompt([{
-        // get Team members name
-        message: "Enter Team Member's name",
-        name: "name"
-    },
-    {
-        // get team members role
-        type: "list",
-        message: "Select temam members role",
-        name: "role",
-        choices: ["Engineer", "Intern", "Manager"]
+async function addMember() {
+    const answers = await inquirer.prompt([
+        {
+            message: "Please enter your team name",
+            name: "team"
 
-    },
-    {
-        // get team members id
-        name: "id",
-        message: "Please enter Team members id."
-    },
-    // get team members email
-    {
-        name: "email",
-        message: "Please enter user email."
-    }
+
+        },
+
+        {
+            // get Team members name
+            message: "Enter Team Member's name",
+            name: "name"
+        },
+        {
+            // get team members role
+            type: "list",
+            message: "Select temam members role",
+            name: "role",
+            choices: ["Engineer", "Intern", "Manager"]
+
+        },
+        {
+            // get team members id
+            name: "id",
+            message: "Please enter Team members id."
+        },
+        // get team members email
+        {
+            name: "email",
+            message: "Please enter user email."
+        }
 
     ])
-    .then( async answers => {
-        if (answers.role === "Engineer") {
-            await inquirer.prompt([
-                {
-                    name: "Github",
-                    message: "Please enter The Github Username"
-                }
-            ]) 
-            .then(addMore)
-           
+        .then(answers => {
+            if (answers.role === "Engineer") {
+                inquirer.prompt([
+                    {
+                        name: "Github",
+                        message: "Please enter The Github Username"
+                    }
+                ])
+                    .then(addMore)
 
-            
-        } else if (answers.role === "Intern") {
-            inquirer.prompt([
-                {
-                    name: "school",
-                    message: "Please enter the school name"
-                }
-            ])
-             
-        } else  if (answers.role === "Manager") {
+
+
+            } else if (answers.role === "Intern") {
+                inquirer.prompt([
+                    {
+                        name: "school",
+                        message: "Please enter the school name"
+                    }
+                ])
+
+            } else if (answers.role === "Manager") {
                 inquirer.prompt([
                     {
                         name: "officeNumber",
                         message: "Please enter the office number for this employee"
-    
+
                     }
-                ])    
+                ])
             }
-        
-            
-    }) 
-    
-    return answers;
+
+
+        })
+
+    response.push(answers);
 }
 
- async function addMore() {
-    let add = await inquirer.prompt([
+function addMore(answers) {
+    let add = inquirer.prompt([
         {
             type: "list",
             name: "addMore",
@@ -85,23 +105,36 @@ let answers ={};
             choices: ["yes", "no"]
         }
     ])
-    .then(answers => {
-    if(answers.addMore === "yes") {
-        return addMember();
-    }
+        .then(answers => {
+            if (answers.addMore === "yes") {
+                return addMember();
+            } else {
+                fs.writeFile(outputPath, "html");
+            }
 
-}
+        }
 
-    )
+        )
 }
+const replacePlaceholders = (template, placeholder, value) => {
+
+    //Creating a RegEx Pattern that searches for the placeholder that is given within the {{ }}
+    const pattern = new RegExp("{{ " + placeholder + " }}", "gm");
+
+    //Returns the template after replacing the placeholder with the user value 
+    return template.replace(pattern, value);
+};
+
 
 
 addMember();
 
 
 
-  
-    
+
+
+
+
 
 
 
