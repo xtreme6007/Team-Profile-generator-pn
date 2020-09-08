@@ -11,7 +11,7 @@ const outputPath = path.join(OUTPUT_DIR, "team.html");
 const render = require("./lib/htmlRenderer");
 
 let members = [];
-
+// the first question
 function startTeam() {
     inquirer.prompt([
 
@@ -22,6 +22,7 @@ function startTeam() {
             choices:["manager", "intern", "engineer"]
         }
     ])
+    // switch the next prompt series based on firt question response
     .then(response => {
         switch (response.Role){
             case "manager": 
@@ -33,6 +34,7 @@ function startTeam() {
             case "engineer":
             addEngineer()
             break;
+            // default just bulids the page as is
             default: build();
 
 
@@ -41,6 +43,8 @@ function startTeam() {
 
     )
 }
+
+// if user selects to add a manager
     function addManager() {
         inquirer.prompt([
             {
@@ -67,12 +71,16 @@ function startTeam() {
         ])
         .then(response => {
             addMore();
+            // create new instance of manager
             let manager = new Manager(response.manName, response.manId, response.manEmail, response.Office);
+            // push to array
             members.push(manager);
             
 
         })
     }
+
+    // if user selects to add an intern
     function addIntern() {
         inquirer.prompt([
             {
@@ -99,13 +107,15 @@ function startTeam() {
         ])
         .then(response => {
             addMore();
+            // create new instance of Intern
             let intern = new Intern(response.internName, response.internId, response.internEmail, response.School);
+           // push to array
             members.push(intern);
             
 
         })
     }
-
+// if user selects to add an Engineer
     function addEngineer() {
         inquirer.prompt([
             {
@@ -132,13 +142,15 @@ function startTeam() {
         ])
         .then(response => {
             addMore();
+            // create new instance  of enginner
             let engineer = new Engineer(response.engineerName, response.engineerId, response.engineerEmail, response.gitHub);
+            // push to array
             members.push(engineer);
             
 
         })
     }
-
+ // function to prompt to add more members or not
     function addMore(answers) {
         let add = inquirer.prompt([
             {
@@ -149,8 +161,10 @@ function startTeam() {
             }
         ])
             .then(answers => {
+                // if user answers yes then run the start tem function again
                 if (answers.addMore === "yes") {
                     startTeam();
+                    // if not just build the html with the information given already
                 } else {
                   build();
                 }
@@ -159,18 +173,22 @@ function startTeam() {
     
             )
     }
+    // to build html 
     function build(){
+        // if output_dir dosent exist
         if (!fs.existsSync(OUTPUT_DIR)) 
         {
+            // create OUTPUT_DIR
             fs.mkdirSync(OUTPUT_DIR)
 
         }
+        // write file
         fs.writeFileSync(outputPath, render(members), "utf-8")
 
 
     }
 
-
+// init function
     startTeam();
     
 
