@@ -10,7 +10,7 @@ const outputPath = path.join(OUTPUT_DIR, "team.html");
 
 const render = require("./lib/htmlRenderer");
 
-let memebers = [];
+let members = [];
 
 function startTeam() {
     inquirer.prompt([
@@ -19,11 +19,22 @@ function startTeam() {
             name: "Role",
             type: "list",
             message: "please choose Team Member role",
-            choices:["Manager", "Intern", "Engineer"]
+            choices:["manager", "intern", "engineer"]
         }
     ])
     .then(response => {
-        switch (response.role){
+        switch (response.Role){
+            case "manager": 
+            addManager()
+            break;
+            case "intern":
+            addIntern()
+            break;
+            case "engineer":
+            addEngineer()
+            break;
+            default: build();
+
 
         }
     }
@@ -49,30 +60,123 @@ function startTeam() {
             },
             {
                 type: "input",
-                name: "manOffice",
+                name: "Office",
                 message: "Please enter employees office numbers"
 
             }
         ])
         .then(response => {
-            let manager = new Manager(response.manName, response.manId, response.manEmail, response.manOffice);
-            memebers.push(manager);
-            console.log(manager)
+            addMore();
+            let manager = new Manager(response.manName, response.manId, response.manEmail, response.Office);
+            members.push(manager);
+            
+
+        })
+    }
+    function addIntern() {
+        inquirer.prompt([
+            {
+                type: "input",
+                message: "Please enter team member name",
+                name: "internName"
+            },
+            {
+                type: "input",
+                name: "internId",
+                message: "Please enter intern's ID number"
+            },
+            {
+            type: "input",
+            name: "internEmail",
+            message: "Please intern's email"
+            },
+            {
+                type: "input",
+                name: "School",
+                message: "Please enter intern's school name"
+
+            }
+        ])
+        .then(response => {
+            addMore();
+            let intern = new Intern(response.internName, response.internId, response.internEmail, response.School);
+            members.push(intern);
+            
 
         })
     }
 
+    function addEngineer() {
+        inquirer.prompt([
+            {
+                type: "input",
+                message: "Please enter team member name",
+                name: "engineerName"
+            },
+            {
+                type: "input",
+                name: "engineerId",
+                message: "Please enter employees ID number"
+            },
+            {
+            type: "input",
+            name: "engineerEmail",
+            message: "Please employees email"
+            },
+            {
+                type: "input",
+                name: "engineerOffice",
+                message: "Please enter employees office numbers"
+
+            }
+        ])
+        .then(response => {
+            addMore();
+            let engineer = new Engineer(response.engineerName, response.engineerId, response.engineerEmail, response.gitHub);
+            members.push(engineer);
+            
+
+        })
+    }
+
+    function addMore(answers) {
+        let add = inquirer.prompt([
+            {
+                type: "list",
+                name: "addMore",
+                message: "Would you like to add another team member?",
+                choices: ["yes", "no"]
+            }
+        ])
+            .then(answers => {
+                if (answers.addMore === "yes") {
+                    startTeam();
+                } else {
+                  build();
+                }
+    
+            }
+    
+            )
+    }
+    function build(){
+        if (!fs.existsSync(OUTPUT_DIR)) 
+        {
+            fs.mkdirSync(OUTPUT_DIR)
+
+        }
+        fs.writeFileSync(outputPath, render(members), "utf-8")
+
+
+    }
+
+
+    startTeam();
+    
 
 
 
-const replacePlaceholders = (template, placeholder, value) => {
 
-    //Creating a RegEx Pattern that searches for the placeholder that is given within the {{ }}
-    const pattern = new RegExp("{{ " + placeholder + " }}", "gm");
-
-    //Returns the template after replacing the placeholder with the user value 
-    return template.replace(pattern, value);
-};
 
 
 
