@@ -135,7 +135,7 @@ function startTeam() {
             },
             {
                 type: "input",
-                name: "gitHubUsername",
+                name: "github",
                 message: "Please enter employees GitHub Username"
 
             }
@@ -143,7 +143,7 @@ function startTeam() {
         .then(response => {
             addMore();
             // create new instance  of enginner
-            let engineer = new Engineer(response.engineerName, response.engineerId, response.engineerEmail, response.gitHub);
+            let engineer = new Engineer(response.engineerName, response.engineerId, response.engineerEmail, response.github);
             // push to array
             members.push(engineer);
             
